@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Prueba examen</title>
+</head>
+<body>
+    <div id="persona">
+
+        Nombre:<input type="text" id="nombre" required>
+        <br><br>
+        Edad: <input type="number" name="edad" id="edad" required>
+        <br><br>
+        Genero: <br><br>
+        Hombre:
+        <input type="radio" name="g" id="h" class="g" value="hombre" checked>
+        <br><br>
+        Mujer: <input type="radio" name="g" id="m" class="g" value="mujer" >
+        <br><br>
+        Cargo:
+        <select name="cargo" id="cargo">
+            <option  value="estudiante">Estudiante</option>
+            <option  value="profesor">Profesor</option>
+        </select>
+        <br><br><br><br>
+
+    </div>
+
+    <div id="estudiante" style="display: none;">
+        Curso:
+        <select name="curso" id="curso">
+            <option value="1">1º</option>
+            <option value="2">2º</option>
+        </select>
+
+        <br><br>
+        Grupo:
+        <select name="grupo" id="grupo">
+            <option value="a">A</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+        </select>
+        <br><br><br>
+        <input type="submit" value="Insertar" id="inserEstu">
+        <br><br><br>
+
+    </div>
+
+    <div id="profesor" style="display: none;">
+        Asignatura:
+        <select name="asignatura" id="asignatura" multiple>
+            <option value="matematicas">Matematicas</option>
+            <option value="lengua">Lengua</option>
+            <option value="naturales">Naturales</option>
+        </select>
+        <br><br><br>
+        <button id="inserProfe">Insertar</button>
+        <br><br><br>
+    </div>
+
+    <div id="listaObj" style="float: right;">
+
+        <textarea name="lista" id="lista" cols="40" rows="15"></textarea>
+
+    </div>
+
+    <script>
+
+        //-----MOSTRAR ATRIBUTOS SOLO DE ESTUDIANTE O DE PROFESOR, SEGUN ELECCION------------
+
+        //recogemos el select cargo y lo almacenamos en una variable
+        var cargo = document.querySelector("#cargo");
+
+        cargo.addEventListener("click", function(){
+            if(cargo.value == "estudiante"){
+                document.getElementById("profesor").style.display = "none";
+                document.getElementById("estudiante").style.display = "block";
+            }else {
+                document.getElementById("profesor").style.display = "block";
+                document.getElementById("estudiante").style.display = "none";
+            }
+        });
+
+
+        //CREAMOS LAS CLASES PERSONA, ESTUDIANTE Y PROFESOR
+
+        function Persona(nombre, edad, genero){
+            this.nombre = nombre;
+            this.edad = edad;
+            this.genero = genero;
+        }
+
+        function Estudiante(nombre, edad, genero, curso, grupo){
+            Persona.call(this, nombre, edad, genero);
+            this.curso = curso;
+            this.grupo = grupo;
+            this.mostrar = function(){
+                return "Estudiante: " + this.nombre + ", " + this.edad + ", " + this.genero + ", " + this.curso + ", " + this.grupo;
+            }
+        }
+
+        function Profesor(nombre, edad, genero, asignatura){
+            Persona.call(this, nombre, edad, genero);
+            this.asignatura = asignatura;
+            this.mostrar = function(){
+                return "Profesor: " + this.nombre + ", " + this.edad + ", " + this.genero + ", " + this.asignatura;
+            }
+        }
+
+        //CREAMOS UN ARRAY PARA GUARDAR LOS OBJETOS
+
+        var objetos = new Array();
+
+        //CREAMOS LOS EVENTOS PARA AÑADIR ESTUDIANTE Y PROFESOR
+
+        //EVENTO PARA AÑADIR ESTUDIANTE 
+        document.querySelector("#inserEstu").addEventListener("click", function(){
+
+            //recogemos todos los valores
+            var nombre = document.getElementById("nombre").value;
+            var edad = document.getElementById("edad").value;
+            
+            //recogemos en el radiobutton el valor seleccionado de esta forma
+            var genero = document.querySelector('input[name=g]:checked').value;
+
+            var curso = document.querySelector("#curso").value;
+            var grupo = document.querySelector("#grupo").value;
+
+            //CREAMOS UN OBJETO DE TIPO ESTUDIANTE
+            var estudiante = new Estudiante(nombre, edad, genero, curso, grupo);
+            //AÑADIMOS A NUESTRA LISTA DE OBJETOS
+            objetos.push(estudiante);
+            //Y MOSTRAMOS NUESTRA LISTA COMPLETA EN EL TEXTAREA
+            document.getElementById("lista").value = "";
+            for(var i = 0; i < objetos.length; i++){
+                
+                document.getElementById("lista").value += objetos[i].mostrar()+"\n";
+            }
+        });
+
+
+                //EVENTO PARA AÑADIR PROFESOR 
+                document.querySelector("#inserProfe").addEventListener("click", function(){
+
+                //recogemos todos los valores
+                var nombre = document.getElementById("nombre").value;
+                var edad = document.getElementById("edad").value;
+
+                //recogemos en el radiobutton el valor seleccionado de esta forma
+                var genero = document.querySelector('input[name=g]:checked').value;
+
+                //vamos a recoger varios valores de seleccion multiple 
+                var asig = document.getElementsByTagName("asignatura").values;
+                console.log(asig);
+
+
+
+
+                //CREAMOS UN OBJETO DE TIPO PROFESOR
+                var profesor = new Profesor(nombre, edad, genero, asignatura);
+                //AÑADIMOS A NUESTRA LISTA DE OBJETOS
+                objetos.push(profesor);
+                //Y MOSTRAMOS NUESTRA LISTA COMPLETA EN EL TEXTAREA
+                document.getElementById("lista").value = "";
+                for(var i = 0; i < objetos.length; i++){
+                    //IMPORTATE, EL METODO DE UN OBJETO SIEMPRE CON PARENTESIS FINALES
+                    document.getElementById("lista").value += objetos[i].mostrar()+"\n";
+                }
+                });
+
+
+            //EN CASO DE QUE NO SE HAGA CLICK EN LA PÁGINA SE CIERRE SOLO A LOS 3 SEGUNDOS
+
+                //inicializamos un booleano
+                var cerrar = true;
+
+                //creamos un evento, si hacemos click cerrar se pone a false
+                document.addEventListener("click", function(){cerrar = false});
+
+
+                //haremos la comprobacion, si cerrar está a true se cierra a los 3 segundos, si no hemos hecho click se cierra porque
+                //por defecto la hemos inicializado a true, si por su contrario está a false se cambia a true, y se mantendra así mientras 
+                //no hagamos click que es nuestro evento que cambia el cerrar a false
+                setInterval(function(){
+                    if(cerrar){
+                        window.close();
+                    } else {
+                        cerrar = true;
+                    }
+                }, 3000);
+                        
+                    
+            
+    
+    </script>
+
+</body>
+</html>
